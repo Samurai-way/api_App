@@ -15,5 +15,8 @@ export const instance = axios.create({
 export const axiosAPI = {
     get() {
         return instance.get('api/users')
+    },
+    post(name: string, job: string){
+        return instance.post('api/users', {name, job})
     }
 }

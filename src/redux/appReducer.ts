@@ -2,11 +2,11 @@ import {Dispatch} from "redux";
 import {axiosAPI} from "./api";
 
 type InitialStateType = typeof initialState
-type ActionsType = setDATA | deleteUser
+type ActionsType = setDATA | deleteUser | createUser
 
 type setDATA = ReturnType<typeof setDATAAC>
 type deleteUser = ReturnType<typeof deleteUserAC>
-
+type createUser = ReturnType<typeof createUserAC>
 
 
 export type DataType = {
@@ -20,8 +20,6 @@ export type DataType = {
 export const initialState = [] as DataType[]
 
 
-
-
 export const appReducer = (state: InitialStateType = initialState, action: ActionsType): InitialStateType => {
     // debugger
     switch (action.type) {
@@ -29,11 +27,14 @@ export const appReducer = (state: InitialStateType = initialState, action: Actio
             return action.users
         case 'DELETE-USER':
             return state.filter(u => u.id !== action.id)
+        case 'CREATE-USER':
+            return {
+                ...state
+            }
         default:
             return state
     }
 }
-
 
 
 export const setDATAAC = (users: []) => {
@@ -45,10 +46,17 @@ export const setDATAAC = (users: []) => {
 }
 
 export const deleteUserAC = (id: number) => {
-    return{
+    return {
         type: 'DELETE-USER',
         id
-    }as const
+    } as const
+}
+
+export const createUserAC = (name: string) => {
+    return {
+        type: 'CREATE-USER',
+        name
+    } as const
 }
 
 export const incrementThunkAC = () => (dispatch: Dispatch, getState: () => void) => {
@@ -58,4 +66,8 @@ export const incrementThunkAC = () => (dispatch: Dispatch, getState: () => void)
 
 export const deleteUserThunkAC = (id: number) => (dispatch: Dispatch, getState: () => void) => {
     dispatch(deleteUserAC(id))
+}
+
+export const createUserThunkAC = (name: string) => (dispatch: Dispatch, getState: () => void) => {
+    axiosAPI.post(name, 'google').then(res => dispatch(createUserAC(name)))
 }
