@@ -14,6 +14,7 @@ export const instance = axios.create({
     headers: {
         // Не забываем заменить API-KEY на собственный
         // 'Authorization': 'Basic YWRtaW46cXdlcnR5',
+        'Content-type': 'application/json; charset=UTF-8'
     }
 })
 
@@ -23,6 +24,9 @@ export const axiosAPI = {
     },
     delete(id: number) {
         return instance.delete(`posts/${id}`)
+    },
+    post(body: {title: string, body: string, userId: number}){
+        return instance.post('posts', {body})
     }
 
 }
