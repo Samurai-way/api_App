@@ -1,62 +1,38 @@
-import React, {useState} from 'react';
+import React from 'react';
 import a from './App.module.css';
-import {useAppDispatch, useAppSelector} from "./hooks/app/hooks";
-import {DataType, incrementThunkAC} from "./redux/appReducer";
+import {useDispatch, useSelector} from "react-redux";
+import {AppRootStateType} from "./redux/store";
+import {getItemsThunk, PostsDataType, skipDataThunk, skipItemsAC} from "./redux/appReducer";
 
 
 function App() {
-    const [json, setJson] = useState<DataType[]>([])
-    const dispatch = useAppDispatch()
-    const users = useAppSelector<DataType[]>(state => state.users)
 
-    // const [name, setName]=useState('')
-    const showUsers = () => {
-        fetch('https://backsamurai.herokuapp.com/person')
-            .then(response => response.json())
-            .then(json => setJson(json))
-        // dispatch(incrementThunkAC())
+    const dispatch = useDispatch()
+    const items = useSelector<AppRootStateType, Array<PostsDataType>>(state => state.items.items)
+
+    const itemsData = items.map(i => <ul key={i.id}>
+            <li>id:{i.id}</li>
+            <li>body:{i.body}</li>
+            <li>title:{i.title}</li>
+            <li>userId:{i.userId}</li></ul>)
+
+
+    const showButtonClick = () => {
+        // @ts-ignore
+        dispatch(getItemsThunk())
     }
 
-    // const deleteUserClick = (id: number) => {
-    //     dispatch(deleteUserThunkAC(id))
-    // }
-    //
-    // const createNameClick = () => {
-    //     dispatch(createUserThunkAC(name))
-    // }
-    //
-    // const oncChangeSetName = (e: ChangeEvent<HTMLInputElement>) => {
-    //     setName(e.currentTarget.value)
-    // }
+    const skipButtonClick = () => {
+
+        // @ts-ignore
+        dispatch(skipDataThunk())
+    }
 
     return (
         <div className={a.wrapper}>
-            <div>
-                {/*<input placeholder={'name'} onChange={oncChangeSetName} value={name}/>*/}
-                {/*<button onClick={createNameClick}>create name</button>*/}
-            </div>
-            <div className={a.container}>
-                <div className={a.users}>
-                    {/*{*/}
-                    {/*    !users.length ? 'it is over' : users.map(u => <div>*/}
-                    {/*        <div>id: {u.id}</div>*/}
-                    {/*        <div>name: {u.name}</div>*/}
-                    {/*        <img src={u.image}/>*/}
-                    {/*    </div>)*/}
-                    {/*}*/}
-                    {
-                        json.map(j =>
-                            <li>
-                                <div>id:{j.id}</div>
-                                <div>name:{j.name}</div>
-                                <div><img src={j.image}/></div>
-                            </li>
-                        )
-                    }
-                </div>
-            </div>
-            <div>users: {users.length}</div>
-            <button onClick={showUsers}>show</button>
+            <button onClick={showButtonClick}>show</button>
+            <button onClick={skipButtonClick}>skip</button>
+            {!items.length ? <div>items over</div> : itemsData}
         </div>
     );
 }

@@ -2,68 +2,63 @@ import {Dispatch} from "redux";
 import {axiosAPI} from "./api";
 
 type InitialStateType = typeof initialState
-type ActionsType = setDATA
 
-type setDATA = ReturnType<typeof setDATAAC>
-// type deleteUser = ReturnType<typeof deleteUserAC>
-// type createUser = ReturnType<typeof createUserAC>
+type getItemsAC = ReturnType<typeof getItemsAC>
+type skipItems = ReturnType<typeof skipItemsAC>
+
+type ActionsType = getItemsAC | skipItems
 
 
-export type DataType = {
-    id: number,
-    name: string
-    image: string
+export type PostsDataType = {
+    userId: number
+    id: number
+    title: string
+    body: string
 }
 
-export const initialState = [] as DataType[]
+export const initialState = {
+    items: [] as PostsDataType[]
+}
 
 
 export const appReducer = (state: InitialStateType = initialState, action: ActionsType): InitialStateType => {
-    // debugger
     switch (action.type) {
-        case 'GET-USERS':
-            return action.users
-        // case 'DELETE-USER':
-        //     return state.filter(u => u.id !== action.id)
-        // case 'CREATE-USER':
-        //     return state
+        case "GET-ITEMS":
+            return {
+                ...state,
+                items: action.items
+            }
+        case "SKIP-ITEMS":
+            return {
+                ...state,
+                items: action.data
+            }
         default:
             return state
     }
 }
 
-
-export const setDATAAC = (users: []) => {
-    debugger
+export const getItemsAC = (items: []) => {
     return {
-        type: 'GET-USERS',
-        users
+        type: 'GET-ITEMS',
+        items
     } as const
 }
 
-// export const deleteUserAC = (id: number) => {
-//     return {
-//         type: 'DELETE-USER',
-//         id
-//     } as const
-// }
-
-// export const createUserAC = (name: string) => {
-//     return {
-//         type: 'CREATE-USER',
-//         name
-//     } as const
-// }
-
-export const incrementThunkAC = () => (dispatch: Dispatch, getState: () => void) => {
-    axiosAPI.get().then(res => console.log(res.data))
-        // dispatch(setDATAAC(res.data)))
+export const skipItemsAC = (data: []) => {
+    return {
+        type: 'SKIP-ITEMS',
+        data
+    } as const
 }
 
-// export const deleteUserThunkAC = (id: number) => (dispatch: Dispatch, getState: () => void) => {
-//     dispatch(deleteUserAC(id))
-// }
-//
-// export const createUserThunkAC = (name: string) => (dispatch: Dispatch, getState: () => void) => {
-//     axiosAPI.post(name, 'google').then(res => dispatch(createUserAC(name)))
-// }
+export const getItemsThunk = () => (dispatch: Dispatch) => {
+    axiosAPI.get()
+        .then((res)=>{
+            dispatch(getItemsAC(res.data))
+        })
+}
+
+export const skipDataThunk = () => (dispatch: Dispatch) => {
+    dispatch(skipItemsAC([]))
+}
